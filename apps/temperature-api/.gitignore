@@ -1,0 +1,36 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+*.exe
+
+# Rider
+.idea/
+
+# Visual Studio
+.vs/
+*.sln.DotSettings.user
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Oo]ut/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
