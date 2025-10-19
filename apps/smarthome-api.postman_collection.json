@@ -83,7 +83,7 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n    \"name\": \"Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room\",\n    \"unit\": \"°C\"\n}"
+                    "raw": "{\n    \"name\": \"Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room\",\n    \"unit\": \"C\"\n}"
                 },
                 "url": {
                     "raw": "http://localhost:8080/api/v1/sensors",
@@ -114,7 +114,7 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n    \"name\": \"Updated Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room\",\n    \"unit\": \"°C\"\n}"
+                    "raw": "{\n    \"name\": \"Updated Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room Updated\",\n    \"value\": 23.5,\n    \"unit\": \"C\",\n    \"status\": \"active\"\n}"
                 },
                 "url": {
                     "raw": "http://localhost:8080/api/v1/sensors/1",
@@ -187,6 +187,77 @@
                     ]
                 },
                 "description": "Update a sensor's value and status"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Temperature by Location (Integration with .NET API)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/api/v1/sensors/temperature/Living Room",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "api",
+                        "v1",
+                        "sensors",
+                        "temperature",
+                        "Living Room"
+                    ]
+                },
+                "description": "Get temperature from .NET Temperature API via Go monolith"
+            },
+            "response": []
+        },
+        {
+            "name": "[Temperature API .NET] Get Temperature by Location - Living Room",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8081/temperature?location=Living Room",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8081",
+                    "path": [
+                        "temperature"
+                    ],
+                    "query": [
+                        {
+                            "key": "location",
+                            "value": "Living Room"
+                        }
+                    ]
+                },
+                "description": "Direct call to .NET Temperature API - get by location"
+            },
+            "response": []
+        },
+        {
+            "name": "[Temperature API .NET] Get Temperature by ID - Sensor 1",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8081/temperature/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8081",
+                    "path": [
+                        "temperature",
+                        "1"
+                    ]
+                },
+                "description": "Direct call to .NET Temperature API - get by sensor ID"
             },
             "response": []
         }

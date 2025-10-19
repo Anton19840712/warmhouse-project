@@ -1,8 +1,5 @@
--- Create the database if it doesn't exist
-CREATE DATABASE smarthome;
-
--- Connect to the database
-\c smarthome;
+-- Database is already created by POSTGRES_DB env variable
+-- and we're already connected to it in docker-entrypoint-initdb.d/
 
 -- Create the sensors table
 CREATE TABLE IF NOT EXISTS sensors (
