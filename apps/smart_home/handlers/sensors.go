@@ -1,14 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
-	"smarthome/db"
-	"smarthome/models"
 	"smarthome/services"
 
 	"github.com/gin-gonic/gin"
@@ -16,15 +13,13 @@ import (
 
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
-	DB                 *db.DB
 	TemperatureService *services.TemperatureService
 	TelemetryService   *services.TelemetryService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService, telemetryService *services.TelemetryService) *SensorHandler {
+func NewSensorHandler(temperatureService *services.TemperatureService, telemetryService *services.TelemetryService) *SensorHandler {
 	return &SensorHandler{
-		DB:                 db,
 		TemperatureService: temperatureService,
 		TelemetryService:   telemetryService,
 	}
@@ -36,18 +31,18 @@ func (h *SensorHandler) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		sensors.GET("", h.GetSensors)
 		sensors.GET("/:id", h.GetSensorByID)
-		sensors.POST("", h.CreateSensor)
-		sensors.PUT("/:id", h.UpdateSensor)
-		sensors.DELETE("/:id", h.DeleteSensor)
+		// Create/Update/Delete sensors should be done directly via TelemetryService API
 		sensors.GET("/temperature/:location", h.GetTemperatureByLocation)
 	}
 }
 
 // GetSensors handles GET /api/v1/sensors
 func (h *SensorHandler) GetSensors(c *gin.Context) {
-	sensors, err := h.DB.GetSensors(context.Background())
+	// Proxy to Telemetry Service
+	sensors, err := h.TelemetryService.GetSensors()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Printf("Failed to get sensors from Telemetry Service: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch sensors"})
 		return
 	}
 
@@ -62,8 +57,10 @@ func (h *SensorHandler) GetSensorByID(c *gin.Context) {
 		return
 	}
 
-	sensor, err := h.DB.GetSensorByID(context.Background(), id)
+	// Proxy to Telemetry Service
+	sensor, err := h.TelemetryService.GetSensorByID(id)
 	if err != nil {
+		log.Printf("Failed to get sensor %d from Telemetry Service: %v", id, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Sensor not found"})
 		return
 	}
@@ -116,61 +113,4 @@ func (h *SensorHandler) GetTemperatureByLocation(c *gin.Context) {
 		"timestamp":   tempData.Timestamp,
 		"description": tempData.Description,
 	})
-}
-
-// CreateSensor handles POST /api/v1/sensors
-func (h *SensorHandler) CreateSensor(c *gin.Context) {
-	var sensorCreate models.SensorCreate
-	if err := c.ShouldBindJSON(&sensorCreate); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	sensor, err := h.DB.CreateSensor(context.Background(), sensorCreate)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, sensor)
-}
-
-// UpdateSensor handles PUT /api/v1/sensors/:id
-func (h *SensorHandler) UpdateSensor(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sensor ID"})
-		return
-	}
-
-	var sensorUpdate models.SensorUpdate
-	if err := c.ShouldBindJSON(&sensorUpdate); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	sensor, err := h.DB.UpdateSensor(context.Background(), id, sensorUpdate)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, sensor)
-}
-
-// DeleteSensor handles DELETE /api/v1/sensors/:id
-func (h *SensorHandler) DeleteSensor(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sensor ID"})
-		return
-	}
-
-	err = h.DB.DeleteSensor(context.Background(), id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Sensor deleted successfully"})
 }

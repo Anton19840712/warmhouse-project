@@ -56,7 +56,7 @@ func main() {
 	apiRoutes := router.Group("/api/v1")
 
 	// Register sensor routes
-	sensorHandler := handlers.NewSensorHandler(database, temperatureService, telemetryService)
+	sensorHandler := handlers.NewSensorHandler(temperatureService, telemetryService)
 	sensorHandler.RegisterRoutes(apiRoutes)
 
 	// Register device routes
