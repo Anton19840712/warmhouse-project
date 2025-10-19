@@ -1,0 +1,83 @@
+@startuml er-diagram
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b>PK: x</b>
+!define foreign_key(x) <color:green>FK: x</color>
+!define column(x) <color:blue>x</color>
+
+title ER-диаграмма Smart Home системы
+
+entity "sensors" as sensors {
+  primary_key(id) : SERIAL
+  --
+  column(name) : VARCHAR(100)
+  column(type) : VARCHAR(50)
+  column(location) : VARCHAR(100)
+  column(unit) : VARCHAR(20)
+  column(status) : VARCHAR(20)
+  column(last_updated) : TIMESTAMP
+  column(created_at) : TIMESTAMP
+}
+
+entity "TelemetryReadings" as telemetry {
+  primary_key(Id) : SERIAL
+  --
+  foreign_key(SensorId) : INTEGER
+  column(Value) : DOUBLE PRECISION
+  column(Unit) : VARCHAR(20)
+  column(Status) : VARCHAR(20)
+  column(Timestamp) : TIMESTAMP
+  column(Location) : VARCHAR(100)
+  column(SensorType) : VARCHAR(50)
+}
+
+entity "Devices" as devices {
+  primary_key(Id) : SERIAL
+  --
+  column(Name) : VARCHAR(100)
+  column(Type) : VARCHAR(50)
+  column(Location) : VARCHAR(100)
+  column(Status) : VARCHAR(20)
+  column(SerialNumber) : VARCHAR(50)
+  column(CreatedAt) : TIMESTAMP
+  column(LastCommandAt) : TIMESTAMP
+}
+
+entity "DeviceCommands" as commands {
+  primary_key(Id) : SERIAL
+  --
+  foreign_key(DeviceId) : INTEGER
+  column(Command) : VARCHAR(50)
+  column(Parameters) : TEXT
+  column(Status) : VARCHAR(20)
+  column(CreatedAt) : TIMESTAMP
+  column(ExecutedAt) : TIMESTAMP
+}
+
+sensors ||--o{ telemetry : "один ко многим"
+devices ||--o{ commands : "один ко многим"
+
+note right of sensors
+  Хранит метаданные о датчиках.
+  Один датчик может иметь
+  много показаний телеметрии.
+end note
+
+note right of telemetry
+  Хранит показания с датчиков.
+  Связь с sensors через SensorId.
+  CASCADE DELETE при удалении датчика.
+end note
+
+note right of devices
+  Хранит умные устройства.
+  Одно устройство может иметь
+  много команд.
+end note
+
+note right of commands
+  Хранит команды для устройств.
+  Связь с devices через DeviceId.
+  CASCADE DELETE при удалении устройства.
+end note
+
+@enduml

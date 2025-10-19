@@ -1,0 +1,25 @@
+@startuml components-device
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component diagram для Device Service
+
+Container(goMonolith, "Go Monolith", "Go", "API Gateway")
+ContainerDb(database, "PostgreSQL", "База данных")
+
+Container_Boundary(deviceService, "Device Service") {
+    Component(deviceEndpoints, "Device Endpoints", ".NET Minimal API", "CRUD операции для устройств")
+
+    Component(commandEndpoints, "Command Endpoints", ".NET Minimal API", "Управление командами устройств")
+
+    Component(deviceContext, "Device Context", "Entity Framework", "ORM для работы с БД")
+}
+
+Rel(goMonolith, deviceEndpoints, "GET /api/devices, POST /api/devices", "HTTP/JSON")
+Rel(goMonolith, commandEndpoints, "POST /api/commands, GET /api/commands/status", "HTTP/JSON")
+
+Rel(deviceEndpoints, deviceContext, "CRUD операции", "C#")
+Rel(commandEndpoints, deviceContext, "Сохраняет/получает команды", "C#")
+
+Rel(deviceContext, database, "SQL запросы", "Npgsql")
+
+@enduml

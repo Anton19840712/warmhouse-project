@@ -1,0 +1,31 @@
+@startuml containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container diagram для Smart Home системы (To-Be - микросервисная архитектура)
+
+Person(user, "Пользователь", "Житель дома")
+
+System_Boundary(smartHomeSystem, "Smart Home System") {
+    Container(goMonolith, "Go Monolith", "Go", "API Gateway и координация запросов, оркестрация вызовов микросервисов")
+
+    Container(telemetryService, "Telemetry Service", ".NET/C#", "Сбор и хранение телеметрических данных, статистика")
+
+    Container(deviceService, "Device Service", ".NET/C#", "Управление устройствами и командами")
+
+    Container(temperatureApi, "Temperature API", ".NET/C#", "Эмуляция физических датчиков температуры")
+}
+
+ContainerDb(database, "PostgreSQL", "PostgreSQL", "Хранит датчики, телеметрию, устройства и команды")
+
+Rel(user, goMonolith, "Просматривает данные, управляет системой", "HTTPS/REST")
+
+Rel(goMonolith, telemetryService, "Получает телеметрию", "HTTP/REST")
+Rel(goMonolith, deviceService, "Управляет устройствами", "HTTP/REST")
+Rel(goMonolith, temperatureApi, "Запрашивает температуру", "HTTP/REST")
+
+Rel(telemetryService, database, "Читает/пишет телеметрию", "SQL/TCP")
+Rel(telemetryService, temperatureApi, "Запрашивает показания", "HTTP/REST")
+
+Rel(deviceService, database, "Читает/пишет устройства", "SQL/TCP")
+
+@enduml
