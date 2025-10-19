@@ -16,10 +16,10 @@ public static class TemperatureEndpoints
 
     public static void MapTemperatureEndpoints(this WebApplication app)
     {
-        app.MapGet("/temperature", GetByLocation)
+        app.MapGet("/api/temperature", GetByLocation)
             .WithName("GetTemperatureByLocation");
 
-        app.MapGet("/temperature/{id}", GetById)
+        app.MapGet("/api/temperature/{id}", GetById)
             .WithName("GetTemperatureById");
     }
 

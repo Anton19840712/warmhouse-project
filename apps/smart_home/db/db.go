@@ -41,7 +41,7 @@ func (db *DB) Close() {
 // GetSensors retrieves all sensors from the database
 func (db *DB) GetSensors(ctx context.Context) ([]models.Sensor, error) {
 	query := `
-		SELECT id, name, type, location, value, unit, status, last_updated, created_at
+		SELECT id, name, type, location, unit, status, last_updated, created_at
 		FROM sensors
 		ORDER BY id
 	`
@@ -60,7 +60,6 @@ func (db *DB) GetSensors(ctx context.Context) ([]models.Sensor, error) {
 			&s.Name,
 			&s.Type,
 			&s.Location,
-			&s.Value,
 			&s.Unit,
 			&s.Status,
 			&s.LastUpdated,
@@ -82,7 +81,7 @@ func (db *DB) GetSensors(ctx context.Context) ([]models.Sensor, error) {
 // GetSensorByID retrieves a sensor by its ID
 func (db *DB) GetSensorByID(ctx context.Context, id int) (models.Sensor, error) {
 	query := `
-		SELECT id, name, type, location, value, unit, status, last_updated, created_at
+		SELECT id, name, type, location, unit, status, last_updated, created_at
 		FROM sensors
 		WHERE id = $1
 	`
@@ -93,7 +92,6 @@ func (db *DB) GetSensorByID(ctx context.Context, id int) (models.Sensor, error) 
 		&s.Name,
 		&s.Type,
 		&s.Location,
-		&s.Value,
 		&s.Unit,
 		&s.Status,
 		&s.LastUpdated,
@@ -111,7 +109,7 @@ func (db *DB) CreateSensor(ctx context.Context, s models.SensorCreate) (models.S
 	query := `
 		INSERT INTO sensors (name, type, location, unit, status, last_updated, created_at)
 		VALUES ($1, $2, $3, $4, 'inactive', $5, $5)
-		RETURNING id, name, type, location, value, unit, status, last_updated, created_at
+		RETURNING id, name, type, location, unit, status, last_updated, created_at
 	`
 
 	now := time.Now()
@@ -127,7 +125,6 @@ func (db *DB) CreateSensor(ctx context.Context, s models.SensorCreate) (models.S
 		&sensor.Name,
 		&sensor.Type,
 		&sensor.Location,
-		&sensor.Value,
 		&sensor.Unit,
 		&sensor.Status,
 		&sensor.LastUpdated,
@@ -171,12 +168,6 @@ func (db *DB) UpdateSensor(ctx context.Context, id int, s models.SensorUpdate) (
 		argCount++
 	}
 
-	if s.Value != nil {
-		query += fmt.Sprintf(", value = $%d", argCount)
-		args = append(args, *s.Value)
-		argCount++
-	}
-
 	if s.Unit != "" {
 		query += fmt.Sprintf(", unit = $%d", argCount)
 		args = append(args, s.Unit)
@@ -191,7 +182,7 @@ func (db *DB) UpdateSensor(ctx context.Context, id int, s models.SensorUpdate) (
 
 	// Add the WHERE clause and RETURNING clause
 	query += ` WHERE id = $` + fmt.Sprintf("%d", argCount) + `
-		RETURNING id, name, type, location, value, unit, status, last_updated, created_at`
+		RETURNING id, name, type, location, unit, status, last_updated, created_at`
 	args = append(args, id)
 
 	var sensor models.Sensor
@@ -200,7 +191,6 @@ func (db *DB) UpdateSensor(ctx context.Context, id int, s models.SensorUpdate) (
 		&sensor.Name,
 		&sensor.Type,
 		&sensor.Location,
-		&sensor.Value,
 		&sensor.Unit,
 		&sensor.Status,
 		&sensor.LastUpdated,
@@ -219,26 +209,6 @@ func (db *DB) DeleteSensor(ctx context.Context, id int) error {
 	result, err := db.Pool.Exec(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("error deleting sensor: %w", err)
-	}
-
-	if result.RowsAffected() == 0 {
-		return errors.New("sensor not found")
-	}
-
-	return nil
-}
-
-// UpdateSensorValue updates the value and status of a sensor
-func (db *DB) UpdateSensorValue(ctx context.Context, id int, value float64, status string) error {
-	query := `
-		UPDATE sensors
-		SET value = $1, status = $2, last_updated = $3
-		WHERE id = $4
-	`
-
-	result, err := db.Pool.Exec(ctx, query, value, status, time.Now(), id)
-	if err != nil {
-		return fmt.Errorf("error updating sensor value: %w", err)
 	}
 
 	if result.RowsAffected() == 0 {

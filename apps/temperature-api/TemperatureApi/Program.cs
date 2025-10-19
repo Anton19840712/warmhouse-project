@@ -20,6 +20,10 @@ public class Program
         app.UseSwagger();
         app.UseSwaggerUI();
 
+        // Health check endpoint
+        app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "temperature-api" }))
+            .WithName("HealthCheck");
+
         app.MapTemperatureEndpoints();
 
         app.Run();

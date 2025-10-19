@@ -260,6 +260,49 @@
                 "description": "Direct call to .NET Temperature API - get by sensor ID"
             },
             "response": []
+        },
+        {
+            "name": "[Telemetry Service .NET] Get All Sensors",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/sensors",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "sensors"
+                    ]
+                },
+                "description": "Get all sensors from Telemetry Service"
+            },
+            "response": []
+        },
+        {
+            "name": "[Telemetry Service .NET] Get Sensor by ID",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/sensors/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
+                        "sensors",
+                        "1"
+                    ]
+                },
+                "description": "Get sensor by ID from Telemetry Service"
+            },
+            "response": []
         }
     ],
     "event": [
