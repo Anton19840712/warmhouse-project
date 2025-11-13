@@ -72,21 +72,12 @@
             "response": []
         },
         {
-            "name": "Create Sensor",
+            "name": "Get Temperature by Location (Integration with .NET API)",
             "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n    \"name\": \"Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room\",\n    \"unit\": \"°C\"\n}"
-                },
+                "method": "GET",
+                "header": [],
                 "url": {
-                    "raw": "http://localhost:8080/api/v1/sensors",
+                    "raw": "http://localhost:8080/api/v1/sensors/temperature/Living Room",
                     "protocol": "http",
                     "host": [
                         "localhost"
@@ -95,98 +86,104 @@
                     "path": [
                         "api",
                         "v1",
+                        "sensors",
+                        "temperature",
+                        "Living Room"
+                    ]
+                },
+                "description": "Get temperature from .NET Temperature API via Go monolith"
+            },
+            "response": []
+        },
+        {
+            "name": "[Temperature API .NET] Get Temperature by Location - Living Room",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8081/api/temperature?location=Living Room",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8081",
+                    "path": [
+                        "api",
+                        "temperature"
+                    ],
+                    "query": [
+                        {
+                            "key": "location",
+                            "value": "Living Room"
+                        }
+                    ]
+                },
+                "description": "Direct call to .NET Temperature API - get by location"
+            },
+            "response": []
+        },
+        {
+            "name": "[Temperature API .NET] Get Temperature by ID - Sensor 1",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8081/api/temperature/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8081",
+                    "path": [
+                        "api",
+                        "temperature",
+                        "1"
+                    ]
+                },
+                "description": "Direct call to .NET Temperature API - get by sensor ID"
+            },
+            "response": []
+        },
+        {
+            "name": "[Telemetry Service .NET] Get All Sensors",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8082/api/sensors",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8082",
+                    "path": [
+                        "api",
                         "sensors"
                     ]
                 },
-                "description": "Create a new sensor"
+                "description": "Get all sensors from Telemetry Service"
             },
             "response": []
         },
         {
-            "name": "Update Sensor",
+            "name": "[Telemetry Service .NET] Get Sensor by ID",
             "request": {
-                "method": "PUT",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n    \"name\": \"Updated Living Room Temperature\",\n    \"type\": \"temperature\",\n    \"location\": \"Living Room\",\n    \"unit\": \"°C\"\n}"
-                },
-                "url": {
-                    "raw": "http://localhost:8080/api/v1/sensors/1",
-                    "protocol": "http",
-                    "host": [
-                        "localhost"
-                    ],
-                    "port": "8080",
-                    "path": [
-                        "api",
-                        "v1",
-                        "sensors",
-                        "1"
-                    ]
-                },
-                "description": "Update an existing sensor"
-            },
-            "response": []
-        },
-        {
-            "name": "Delete Sensor",
-            "request": {
-                "method": "DELETE",
+                "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "http://localhost:8080/api/v1/sensors/1",
+                    "raw": "http://localhost:8082/api/sensors/1",
                     "protocol": "http",
                     "host": [
                         "localhost"
                     ],
-                    "port": "8080",
+                    "port": "8082",
                     "path": [
                         "api",
-                        "v1",
                         "sensors",
                         "1"
                     ]
                 },
-                "description": "Delete a sensor"
-            },
-            "response": []
-        },
-        {
-            "name": "Update Sensor Value",
-            "request": {
-                "method": "PATCH",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n    \"value\": 22.5,\n    \"status\": \"active\"\n}"
-                },
-                "url": {
-                    "raw": "http://localhost:8080/api/v1/sensors/1/value",
-                    "protocol": "http",
-                    "host": [
-                        "localhost"
-                    ],
-                    "port": "8080",
-                    "path": [
-                        "api",
-                        "v1",
-                        "sensors",
-                        "1",
-                        "value"
-                    ]
-                },
-                "description": "Update a sensor's value and status"
+                "description": "Get sensor by ID from Telemetry Service"
             },
             "response": []
         }

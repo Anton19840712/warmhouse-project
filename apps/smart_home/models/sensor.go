@@ -11,13 +11,13 @@ const (
 	Temperature SensorType = "temperature"
 )
 
-// Sensor represents a smart home sensor
+// Sensor represents a smart home sensor (metadata only)
+// Actual sensor readings are stored in TelemetryReadings table
 type Sensor struct {
 	ID          int        `json:"id"`
 	Name        string     `json:"name"`
 	Type        SensorType `json:"type"`
 	Location    string     `json:"location"`
-	Value       float64    `json:"value"`
 	Unit        string     `json:"unit"`
 	Status      string     `json:"status"`
 	LastUpdated time.Time  `json:"last_updated"`
@@ -37,7 +37,6 @@ type SensorUpdate struct {
 	Name     string     `json:"name"`
 	Type     SensorType `json:"type"`
 	Location string     `json:"location"`
-	Value    *float64   `json:"value"`
 	Unit     string     `json:"unit"`
 	Status   string     `json:"status"`
 }

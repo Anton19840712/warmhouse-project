@@ -1,0 +1,128 @@
+@startuml er-diagram
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b>PK: x</b>
+!define foreign_key(x) <color:green>FK: x</color>
+!define column(x) <color:blue>x</color>
+
+title ER-диаграмма Smart Home системы
+
+entity "Users" as users {
+  primary_key(id) : SERIAL
+  --
+  column(email) : VARCHAR(100) UNIQUE
+  column(password_hash) : VARCHAR(255)
+  column(first_name) : VARCHAR(50)
+  column(last_name) : VARCHAR(50)
+  column(phone) : VARCHAR(20)
+  column(created_at) : TIMESTAMP
+  column(last_login) : TIMESTAMP
+}
+
+entity "Houses" as houses {
+  primary_key(id) : SERIAL
+  --
+  foreign_key(user_id) : INTEGER
+  column(address) : VARCHAR(200)
+  column(city) : VARCHAR(100)
+  column(zip_code) : VARCHAR(20)
+  column(created_at) : TIMESTAMP
+}
+
+entity "sensors" as sensors {
+  primary_key(id) : SERIAL
+  --
+  foreign_key(house_id) : INTEGER
+  column(name) : VARCHAR(100)
+  column(type) : VARCHAR(50)
+  column(location) : VARCHAR(100)
+  column(unit) : VARCHAR(20)
+  column(status) : VARCHAR(20)
+  column(last_updated) : TIMESTAMP
+  column(created_at) : TIMESTAMP
+}
+
+entity "TelemetryReadings" as telemetry {
+  primary_key(Id) : SERIAL
+  --
+  foreign_key(SensorId) : INTEGER
+  column(Value) : DOUBLE PRECISION
+  column(Unit) : VARCHAR(20)
+  column(Status) : VARCHAR(20)
+  column(Timestamp) : TIMESTAMP
+  column(Location) : VARCHAR(100)
+  column(SensorType) : VARCHAR(50)
+}
+
+entity "Devices" as devices {
+  primary_key(Id) : SERIAL
+  --
+  foreign_key(HouseId) : INTEGER
+  column(Name) : VARCHAR(100)
+  column(Type) : VARCHAR(50)
+  column(Location) : VARCHAR(100)
+  column(Status) : VARCHAR(20)
+  column(SerialNumber) : VARCHAR(50)
+  column(CreatedAt) : TIMESTAMP
+  column(LastCommandAt) : TIMESTAMP
+}
+
+entity "DeviceCommands" as commands {
+  primary_key(Id) : SERIAL
+  --
+  foreign_key(DeviceId) : INTEGER
+  column(Command) : VARCHAR(50)
+  column(Parameters) : TEXT
+  column(Status) : VARCHAR(20)
+  column(CreatedAt) : TIMESTAMP
+  column(ExecutedAt) : TIMESTAMP
+}
+
+users ||--o{ houses : "один ко многим"
+houses ||--o{ sensors : "один ко многим"
+houses ||--o{ devices : "один ко многим"
+sensors ||--o{ telemetry : "один ко многим"
+devices ||--o{ commands : "один ко многим"
+
+note right of users
+  Пользователи системы.
+  Один пользователь может владеть
+  несколькими домами.
+end note
+
+note right of houses
+  Дома пользователей.
+  В одном доме много датчиков
+  и устройств.
+  Связь с Users через user_id.
+  CASCADE DELETE при удалении пользователя.
+end note
+
+note right of sensors
+  Хранит метаданные о датчиках.
+  Один датчик может иметь
+  много показаний телеметрии.
+  Связь с Houses через house_id.
+  CASCADE DELETE при удалении дома.
+end note
+
+note right of telemetry
+  Хранит показания с датчиков.
+  Связь с sensors через SensorId.
+  CASCADE DELETE при удалении датчика.
+end note
+
+note right of devices
+  Хранит умные устройства.
+  Одно устройство может иметь
+  много команд.
+  Связь с Houses через HouseId.
+  CASCADE DELETE при удалении дома.
+end note
+
+note right of commands
+  Хранит команды для устройств.
+  Связь с devices через DeviceId.
+  CASCADE DELETE при удалении устройства.
+end note
+
+@enduml

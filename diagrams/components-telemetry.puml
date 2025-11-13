@@ -1,0 +1,28 @@
+@startuml components-telemetry
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component diagram для Telemetry Service
+
+Container(goMonolith, "Go Monolith", "Go", "API Gateway")
+Container(temperatureApi, "Temperature API", ".NET", "Датчики")
+ContainerDb(database, "PostgreSQL", "База данных")
+
+Container_Boundary(telemetryService, "Telemetry Service") {
+    Component(telemetryEndpoints, "Telemetry Endpoints", ".NET Minimal API", "HTTP эндпоинты для работы с телеметрией")
+
+    Component(sensorEndpoints, "Sensor Endpoints", ".NET Minimal API", "HTTP эндпоинты для работы с датчиками")
+
+    Component(telemetryContext, "Telemetry Context", "Entity Framework", "ORM для работы с БД")
+}
+
+Rel(goMonolith, telemetryEndpoints, "POST /api/telemetry, GET /api/telemetry/latest", "HTTP/JSON")
+Rel(goMonolith, sensorEndpoints, "GET /api/sensors", "HTTP/JSON")
+
+Rel(telemetryEndpoints, telemetryContext, "Сохраняет/получает данные", "C#")
+Rel(sensorEndpoints, telemetryContext, "Получает датчики", "C#")
+
+Rel(telemetryContext, database, "SQL запросы", "Npgsql")
+
+Rel(telemetryEndpoints, temperatureApi, "Запрашивает показания", "HTTP/REST")
+
+@enduml
