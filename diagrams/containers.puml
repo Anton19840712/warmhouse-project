@@ -6,7 +6,7 @@ title Container diagram для Smart Home системы (To-Be - микросе
 Person(user, "Пользователь", "Житель дома")
 
 System_Boundary(smartHomeSystem, "Smart Home System") {
-    Container(goMonolith, "Go Monolith", "Go", "API Gateway и координация запросов, оркестрация вызовов микросервисов")
+    Container(apiGateway, "API Gateway", "Go", "Точка входа в систему, маршрутизация запросов к микросервисам")
 
     Container(telemetryService, "Telemetry Service", ".NET/C#", "Сбор и хранение телеметрических данных, статистика")
 
@@ -17,15 +17,19 @@ System_Boundary(smartHomeSystem, "Smart Home System") {
 
 ContainerDb(database, "PostgreSQL", "PostgreSQL", "Хранит датчики, телеметрию, устройства и команды")
 
-Rel(user, goMonolith, "Просматривает данные, управляет системой", "HTTPS/REST")
+System_Ext(iotSensors, "IoT Temperature Sensors", "Физические датчики температуры в доме")
 
-Rel(goMonolith, telemetryService, "Получает телеметрию", "HTTP/REST")
-Rel(goMonolith, deviceService, "Управляет устройствами", "HTTP/REST")
-Rel(goMonolith, temperatureApi, "Запрашивает температуру", "HTTP/REST")
+Rel(user, apiGateway, "Просматривает данные, управляет системой", "HTTPS/REST")
+
+Rel(apiGateway, telemetryService, "Получает телеметрию", "HTTP/REST")
+Rel(apiGateway, deviceService, "Управляет устройствами", "HTTP/REST")
+Rel(apiGateway, temperatureApi, "Запрашивает температуру", "HTTP/REST")
 
 Rel(telemetryService, database, "Читает/пишет телеметрию", "SQL/TCP")
 Rel(telemetryService, temperatureApi, "Запрашивает показания", "HTTP/REST")
 
 Rel(deviceService, database, "Читает/пишет устройства", "SQL/TCP")
+
+Rel(temperatureApi, iotSensors, "Получает данные от датчиков", "HTTP/MQTT")
 
 @enduml

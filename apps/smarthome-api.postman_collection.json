@@ -101,13 +101,14 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "http://localhost:8081/temperature?location=Living Room",
+                    "raw": "http://localhost:8081/api/temperature?location=Living Room",
                     "protocol": "http",
                     "host": [
                         "localhost"
                     ],
                     "port": "8081",
                     "path": [
+                        "api",
                         "temperature"
                     ],
                     "query": [
@@ -127,13 +128,14 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "http://localhost:8081/temperature/1",
+                    "raw": "http://localhost:8081/api/temperature/1",
                     "protocol": "http",
                     "host": [
                         "localhost"
                     ],
                     "port": "8081",
                     "path": [
+                        "api",
                         "temperature",
                         "1"
                     ]
